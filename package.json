@@ -1,6 +1,8 @@
 {
 	"devDependencies": {
 		"@types/express": "^5.0.3",
+		"@types/express-fileupload": "^1.5.1",
+		"@types/multer": "^2.0.0",
 		"@types/node": "^24.0.12",
 		"dotenv": "^17.1.0",
 		"express": "^5.1.0",
@@ -19,5 +21,8 @@
 		"startup": "pnpm exec ts-node src/startup/startup.ts"
 	},
 	"dependencies": {
+		"express-fileupload": "^1.5.2",
+		"image-size": "^2.0.2",
+		"mongoose": "^9.1.5"
 	}
 }
