@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { deleteImage, getImages, postImage } from './handlers/misc';
 import { existsSync, mkdirSync } from 'fs';
 import fileUpload from 'express-fileupload';
@@ -16,6 +16,13 @@ app.use(express.json());
 app.use(fileUpload());
 
 // Endpoints
+app.get("/", (_: Request, res: Response) => {
+    const title = "Savorly Image Storage";
+    res.send(
+        `<!DOCTYPE html><html><head><title>${title}</title></head><body><h1>${title}</h1></body></html>`
+    );
+})
+
 app.get("/images", getImages);
 app.post("/images", postImage);
 app.delete("/images", deleteImage);
