@@ -1,5 +1,11 @@
 import express from 'express';
 import { getHelloWorld } from './handlers/example';
+import { existsSync, mkdirSync } from 'fs';
+
+// create images directory
+if (!existsSync("images")){
+    mkdirSync("images");
+}
 
 // Server setup
 const app = express();
