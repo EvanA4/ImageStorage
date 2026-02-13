@@ -26,7 +26,7 @@ app.get("/", (_: Request, res: Response) => {
 app.get("/images", getImages);
 app.post("/images", postImage);
 app.delete("/images", deleteImage);
-app.get("/sync", dbSync)
+app.post("/sync", dbSync)
 
 /*
 /stats GET

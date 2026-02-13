@@ -3,7 +3,21 @@ import dbConnect from "../utils/dbconnect";
 import { Image } from "../models/Image";
 import { readdirSync, rmSync } from "fs";
 
-export async function dbSync(_: Request, res: Response) {
+export async function dbSync(req: Request, res: Response) {
+    if (!req.body || !req.body.password) {
+        res.status(400).send({
+            message: "No password field in body",
+        });
+        return;
+    }
+
+    if (req.body.password !== process.env.PASSWORD) {
+        res.status(400).send({
+            message: "Incorrect password",
+        });
+        return;
+    }
+
     await dbConnect();
     const fileImages = new Set(readdirSync("images"));
     const dbImages = new Set((await Image.find().select("_id")).map(val => val._id.toString()) as string[]);

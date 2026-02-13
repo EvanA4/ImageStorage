@@ -47,6 +47,20 @@ export async function postImage(req: Request, res: Response) {
     // console.log(`req.params: ${JSON.stringify(req.query)}`);
     // console.log(`req.body: ${JSON.stringify(req.body)}`);
 
+    if (!req.body || !req.body.password) {
+        res.status(400).send({
+            message: "No password field in body",
+        });
+        return;
+    }
+
+    if (req.body.password !== process.env.PASSWORD) {
+        res.status(400).send({
+            message: "Incorrect password",
+        });
+        return;
+    }
+
     if (!req.files || !req.files.images) {
         res.status(400).send({
             message: "No files uploaded",
@@ -97,6 +111,20 @@ export async function postImage(req: Request, res: Response) {
 
 export async function deleteImage(req: Request, res: Response) {
     // console.log(`req.params: ${JSON.stringify(req.query)}`);
+
+    if (!req.body || !req.body.password) {
+        res.status(400).send({
+            message: "No password field in body",
+        });
+        return;
+    }
+
+    if (req.body.password !== process.env.PASSWORD) {
+        res.status(400).send({
+            message: "Incorrect password",
+        });
+        return;
+    }
 
     if (!req.query._id) {
         res.status(400).send({
