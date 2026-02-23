@@ -86,7 +86,7 @@ export async function postImage(req: Request, res: Response) {
 
         // create MongoDB image object
         const toAdd: IImage = {
-            review: req.body.review,
+            reviewId: req.body.reviewId,
             md5: uploaded[i].md5,
             name: uploaded[i].name,
             extension: size.type,

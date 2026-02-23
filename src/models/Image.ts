@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface IImage {
-  review?: string;
+  reviewId?: string;
   md5: string;
   name: string;
   extension: string;
@@ -15,7 +15,7 @@ export interface IImage {
 }
 
 const imageSchema = new mongoose.Schema({
-  review: { type: Schema.Types.ObjectId, ref: "Review", required: false },
+  reviewId: { type: Schema.Types.ObjectId, ref: "Review", required: false },
   md5: { type: String, required: true },
   name: { type: String, required: true },
   extension: { type: String, required: true },
