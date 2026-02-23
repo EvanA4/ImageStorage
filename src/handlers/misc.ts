@@ -10,13 +10,24 @@ import { resolve } from "path";
 export async function getImages(req: Request, res: Response) {
     await dbConnect();
     if (!req.query._id) {
-        // if no specified ID, just get all documents
-        const images = (await Image.find()) as IImage[];
-        res.send({
-            message: `Successfully retrieved ${images.length} image(s)`,
-            images: images
-        });
-        return;
+        // could have a reviewId
+        if (req.query.reviewId) {
+            const images = (await Image.find({
+                reviewId: req.query.reviewId
+            })) as IImage[];
+            res.send({
+                message: `Successfully retrieved ${images.length} image(s)`,
+                images: images
+            });
+
+        } else {
+            // if no specified ID, just get all documents
+            const images = (await Image.find()) as IImage[];
+            res.send({
+                message: `Successfully retrieved ${images.length} image(s)`,
+                images: images
+            });
+        }
 
     } else {
         // if specified ID, fetch either document or image file
