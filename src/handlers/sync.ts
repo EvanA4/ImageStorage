@@ -6,14 +6,16 @@ import { readdirSync, rmSync } from "fs";
 export async function dbSync(req: Request, res: Response) {
     if (!req.body || !req.body.password) {
         res.status(400).send({
-            message: "No password field in body",
+            error: true,
+            message: "No password field in body"
         });
         return;
     }
 
     if (req.body.password !== process.env.PASSWORD) {
         res.status(400).send({
-            message: "Incorrect password",
+            error: true,
+            message: "Incorrect password"
         });
         return;
     }
@@ -41,6 +43,7 @@ export async function dbSync(req: Request, res: Response) {
     });
 
     res.send({
+        error: false,
         message: `Successfully deleted ${docsDeleted} documents(s) and ${filesDeleted} file(s)`
     });
 };

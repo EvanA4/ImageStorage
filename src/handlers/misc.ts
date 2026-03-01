@@ -16,16 +16,18 @@ export async function getImages(req: Request, res: Response) {
                 reviewId: req.query.reviewId
             })) as IImage[];
             res.send({
-                message: `Successfully retrieved ${images.length} image(s)`,
-                images: images
+                error: false,
+                message: `Successfully retrieved ${images.length} image(s).`,
+                value: images
             });
 
         } else {
             // if no specified ID, just get all documents
             const images = (await Image.find()) as IImage[];
             res.send({
-                message: `Successfully retrieved ${images.length} image(s)`,
-                images: images
+                error: false,
+                message: `Successfully retrieved ${images.length} image(s).`,
+                value: images
             });
         }
 
@@ -34,15 +36,17 @@ export async function getImages(req: Request, res: Response) {
         let image = (await Image.findById(req.query._id)) as IImage;
         if (!image) {
             res.status(400).send({
-                message: `Invalid _id query parameter`,
+                error: true,
+                message: `Invalid _id query parameter.`
             });
             return;
         }
 
         if (req.query.doc && req.query.doc == "true") {
             res.send({
-                message: `Successfully retrieved image`,
-                images: image
+                error: false,
+                message: `Successfully retrieved image.`,
+                value: image
             });
             return;
             
@@ -60,6 +64,7 @@ export async function postImage(req: Request, res: Response) {
 
     if (!req.body || !req.body.password) {
         res.status(400).send({
+            error: true,
             message: "No password field in body",
         });
         return;
@@ -67,6 +72,7 @@ export async function postImage(req: Request, res: Response) {
 
     if (req.body.password !== process.env.PASSWORD) {
         res.status(400).send({
+            error: true,
             message: "Incorrect password",
         });
         return;
@@ -74,6 +80,7 @@ export async function postImage(req: Request, res: Response) {
 
     if (!req.files || !req.files.images) {
         res.status(400).send({
+            error: true,
             message: "No files uploaded",
         });
         return;
@@ -115,8 +122,9 @@ export async function postImage(req: Request, res: Response) {
     }
 
     res.send({
+        error: true,
         message: `Successfully uploaded ${newImages.length} file(s)`,
-        uploaded: newImages
+        value: newImages
     });
 };
 
@@ -126,6 +134,7 @@ export async function deleteImage(req: Request, res: Response) {
 
     if (!req.body || !req.body.password) {
         res.status(400).send({
+            error: true,
             message: "No password field in body",
         });
         return;
@@ -133,31 +142,52 @@ export async function deleteImage(req: Request, res: Response) {
 
     if (req.body.password !== process.env.PASSWORD) {
         res.status(400).send({
+            error: true,
             message: "Incorrect password",
         });
         return;
     }
 
-    if (!req.query._id) {
+    if (!req.query._id && !req.query.reviewId) {
         res.status(400).send({
-            message: "Missing _id query parameter"
+            error: true,
+            message: "Missing _id or reviewId query parameter"
         });
         return;
     }
 
     await dbConnect();
-    const deleted = await Image.findByIdAndDelete(req.query._id);
-    if (!deleted) {
-        res.status(400).send({
-            message: `Invalid _id query parameter`,
+    if (req.query._id) {
+        const deleted = await Image.findByIdAndDelete(req.query._id);
+        if (!deleted) {
+            res.status(400).send({
+                error: true,
+                message: `Invalid _id query parameter`,
+            });
+            return;
+        }
+    
+        rmSync(`images/${req.query._id}`);
+    
+        res.send({
+            error: false,
+            message: "Successfully deleted image",
+            value: deleted
         });
-        return;
+
+    } else {
+        const toDelete = await Image.find({ reviewId: req.query.reviewId }) as IImage[];
+        toDelete.forEach(val => {
+            (async () => {
+                await Image.findByIdAndDelete(val._id);
+                rmSync(`images/${val._id}`);
+            })();
+        });
+    
+        res.send({
+            error: false,
+            message: `Successfully deleted ${toDelete.length} image(s)`,
+            value: toDelete
+        });
     }
-
-    rmSync(`images/${req.query._id}`);
-
-    res.send({
-        message: "Successfully deleted image",
-        image: deleted
-    });
 };
