@@ -122,7 +122,7 @@ export async function postImage(req: Request, res: Response) {
     }
 
     res.send({
-        error: true,
+        error: false,
         message: `Successfully uploaded ${newImages.length} file(s)`,
         value: newImages
     });
